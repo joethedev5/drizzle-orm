@@ -87,6 +87,25 @@ beforeAll(() => {
 	pkg = createPackageFromTarballData(new Uint8Array(readFileSync(tarballPath)));
 });
 
+describe('package manifest subpath', () => {
+	test('exports package.json to tools that read installed manifests', () => {
+		const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as {
+			exports: Record<string, unknown>;
+		};
+		expect(manifest.exports['./package.json']).toBe('./package.json');
+	});
+});
+
+describe.skipIf(!ARTIFACTS_PRESENT)('packed manifest subpath', () => {
+	test('ships package.json at the exact export target', () => {
+		const manifest = JSON.parse(pkg.readFile('/node_modules/drizzle-orm/package.json')) as {
+			exports: Record<string, unknown>;
+		};
+		expect(manifest.exports['./package.json']).toBe('./package.json');
+		expect(pkg.fileExists('/node_modules/drizzle-orm/package.json')).toBe(true);
+	});
+});
+
 describe.skipIf(!ARTIFACTS_PRESENT)('driven attw probe across entry shapes', () => {
 	for (const mode of RESOLUTION_MODES) {
 		test(`representative subpaths resolve cleanly under ${mode}`, async () => {

@@ -27,6 +27,7 @@
 				"default": "./index.cjs"
 			}
 		},
+		"./package.json": "./package.json",
 		"./*": {
 			"import": {
 				"types": "./*.d.ts",
